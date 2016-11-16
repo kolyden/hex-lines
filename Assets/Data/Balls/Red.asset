@@ -11,5 +11,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8dc330001a7e724f87dc1235ca1b2ac, type: 3}
   m_Name: Red
   m_EditorClassIdentifier: 
-  color: {r: 1, g: 0, b: 0, a: 0}
+  color: {r: 1, g: 0, b: 0, a: 1}
   sprite: {fileID: 21300000, guid: 5d02b77aedd202544a34f21191508063, type: 3}

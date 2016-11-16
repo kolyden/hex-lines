@@ -13,10 +13,10 @@ namespace Game.HexLines
             get { return _data; }
             set
             {
-                if (_data == data)
+                if (_data == value)
                     return;
 
-                _data = data;
+                _data = value;
                 if (_data)
                     _data.Init(this);
             }
