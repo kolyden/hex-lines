@@ -66,7 +66,9 @@ namespace Game.HexLines
             var image = child.AddComponent<Image>();
             image.sprite = gridSpr;
             _cells[x, y] = child;
-        }
 
+            var button = child.AddComponent<Button>();
+            button.transition = Selectable.Transition.None;
+        }
     }
 }
