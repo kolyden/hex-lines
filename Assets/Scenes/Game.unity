@@ -203,8 +203,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 145aba45e61c66a45a66a9799dcd7d58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rowsCount: 16
-  colsCount: 9
+  rowsCount: 9
+  colsCount: 15
   gridSpr: {fileID: 21300000, guid: 6db1ccff7e7daea4da89499bacbc3156, type: 3}
   cellWidth: 64
   cellHeight: 74
@@ -755,7 +755,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 640, y: 1136}
+  m_ReferenceResolution: {x: 1024, y: 768}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
