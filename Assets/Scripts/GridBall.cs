@@ -43,6 +43,12 @@ namespace Game.HexLines
             }
         }
 
+        public void Hide()
+        {
+            if (animator)
+                animator.SetTrigger(_hideTrigger);
+        }
+
         public event Callback onClick;
 
         //////////////////////////////////////////////////////////////////////////

@@ -118,6 +118,7 @@ namespace Game.HexLines
         void NextTurn()
         {
             CreateBalls(ballsPerTurn);
+            RemoveLines();
         }
 
         void CreateBalls(int count)
@@ -243,11 +244,19 @@ namespace Game.HexLines
             return list.ToArray();
         }
 
-        void GetCell(int x, int y, List<IntVector2> list)
+        bool IsCell(int x, int y)
         {
             if (x < 0 || y < 0 ||
                 x >= grid.colsCount ||
                 y >= grid.rowsCount)
+                return false;
+
+            return true;
+        }
+
+        void GetCell(int x, int y, List<IntVector2> list)
+        {
+            if (!IsCell(x, y))
                 return;
 
             if (_ballsGrid[x, y] == null)
@@ -284,7 +293,174 @@ namespace Game.HexLines
             _currentBall = null;
             _state = State.Normal;
 
-            NextTurn();
+            if (!RemoveLines())
+                NextTurn();
+        }
+
+        bool RemoveLines()
+        {
+            var removeSet = new HashSet<GridBall>();
+
+            // horizontal lines
+            for (int y = 0; y < grid.rowsCount; y++)
+            {
+                int count = 0;
+                BallData color = null;
+                for (int x = 0; x < grid.colsCount; x++)
+                {
+                    var ball = _ballsGrid[x, y];
+                    if (ball == null || ball.data != color)
+                    {
+                        if (count >= 5)
+                        {
+                            for (int i = x - count; i < x; i++)
+                                removeSet.Add(_ballsGrid[i, y]);
+                        }
+
+                        if (ball == null)
+                        {
+                            color = null;
+                            count = 0;
+                        }
+                        else
+                        {
+                            color = ball.data;
+                            count = 1;
+                        }
+                    }
+                    else count++;
+                }
+
+                if (count >= 5)
+                {
+                    for (int i = grid.colsCount - count; i < grid.colsCount; i++)
+                        removeSet.Add(_ballsGrid[i, y]);
+                }
+            }
+
+            // positive diagonal
+            for (int x = 0; x < grid.colsCount; x++)
+                RemovePositiveDiagonal(x, 0, removeSet);
+            for (int y = 2; y < grid.rowsCount; y += 2)
+                RemovePositiveDiagonal(0, y, removeSet);
+
+            // negative diagonal
+            for (int x = 0; x < grid.colsCount; x++)
+                RemoveNegativeDiagonal(x, 0, removeSet);
+            for (int y = 1; y < grid.rowsCount; y += 2)
+                RemoveNegativeDiagonal(grid.colsCount - 1, y, removeSet);
+
+            if (removeSet.Count == 0)
+                return false;
+
+            int N = removeSet.Count;
+            _scoreCount += (N * N - 7 * N + 20);
+            UpdateScore();
+
+            foreach (var ball in removeSet)
+            {
+                var pos = ball.position;
+                _freeCells.Add(pos);
+                _ballsGrid[pos.x, pos.y] = null;
+                ball.Hide();               
+            }
+
+            return true;
+        }
+
+        void RemovePositiveDiagonal(int x, int y, HashSet<GridBall> removeSet)
+        {
+            var list = new List<GridBall>();
+            BallData color = null;
+
+            while (IsCell(x, y))
+            {
+                var ball = _ballsGrid[x, y];
+                if (ball == null || ball.data != color)
+                {
+                    if (list.Count >= 5)
+                        removeSet.UnionWith(list);
+
+                    list.Clear();
+
+                    if (ball == null)
+                        color = null;
+                    else
+                    {
+                        color = ball.data;
+                        list.Add(ball);
+                    }
+                }
+                else list.Add(ball);
+
+//                 if (_ballsGrid[x, y])
+//                 {
+//                     if (_ballsGrid[x,y].data != color)
+//                         list.Clear();
+// 
+//                     list.Add(_ballsGrid[x, y]);
+//                 }
+//                 else if (list.Count > 0)
+//                 {
+//                     if (list.Count >= 5)
+//                         removeSet.UnionWith(list);
+// 
+//                     list.Clear();
+//                 }
+
+                if (y % 2 != 0)
+                {
+                    x++;
+                    y++;
+                }
+                else
+                {
+                    y++;
+                }
+            }
+
+            if (list.Count >= 5)
+                removeSet.UnionWith(list);
+        }
+
+        void RemoveNegativeDiagonal(int x, int y, HashSet<GridBall> removeSet)
+        {
+            var list = new List<GridBall>();
+            BallData color = null;
+
+            while (IsCell(x, y))
+            {
+                var ball = _ballsGrid[x, y];
+                if (ball == null || ball.data != color)
+                {
+                    if (list.Count >= 5)
+                        removeSet.UnionWith(list);
+
+                    list.Clear();
+
+                    if (ball == null)
+                        color = null;
+                    else
+                    {
+                        color = ball.data;
+                        list.Add(ball);
+                    }
+                }
+                else list.Add(ball);
+
+                if (y % 2 != 0)
+                {
+                    y++;
+                }
+                else
+                {
+                    x--;
+                    y++;
+                }
+            }
+
+            if (list.Count >= 5)
+                removeSet.UnionWith(list);
         }
     }
 }
