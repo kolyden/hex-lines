@@ -23,9 +23,12 @@ namespace Game.HexLines
 
                 _data = value;
                 if (_data)
+                {
                     _data.Init(this);
-                if (animator)
-                    animator.SetTrigger(_showTrigger);
+                    if (animator)
+                        animator.SetTrigger(_showTrigger);
+                }
+                else gameObject.SetActive(false);
             }
         }
 

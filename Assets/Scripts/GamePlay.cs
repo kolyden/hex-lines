@@ -362,7 +362,8 @@ namespace Game.HexLines
                 var pos = ball.position;
                 _freeCells.Add(pos);
                 _ballsGrid[pos.x, pos.y] = null;
-                ball.Hide();               
+                ball.Hide();
+                Destroy(ball.gameObject, 1f);
             }
 
             return true;
@@ -392,21 +393,6 @@ namespace Game.HexLines
                     }
                 }
                 else list.Add(ball);
-
-//                 if (_ballsGrid[x, y])
-//                 {
-//                     if (_ballsGrid[x,y].data != color)
-//                         list.Clear();
-// 
-//                     list.Add(_ballsGrid[x, y]);
-//                 }
-//                 else if (list.Count > 0)
-//                 {
-//                     if (list.Count >= 5)
-//                         removeSet.UnionWith(list);
-// 
-//                     list.Clear();
-//                 }
 
                 if (y % 2 != 0)
                 {
