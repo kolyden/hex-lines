@@ -184,8 +184,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_Children:
-  - {fileID: 1461018624}
+  m_Children: []
   m_Father: {fileID: 1849862933}
   m_RootOrder: 1
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -292,7 +291,7 @@ RectTransform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 969539926}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -334,7 +333,7 @@ RectTransform:
   m_Children:
   - {fileID: 1307605386}
   m_Father: {fileID: 1849862933}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: -160, y: -30}
@@ -558,7 +557,7 @@ RectTransform:
   m_Children:
   - {fileID: 1590791413}
   m_Father: {fileID: 1849862933}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 228, y: 534}
@@ -626,12 +625,12 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 1858159858}
-  m_Father: {fileID: 417167128}
-  m_RootOrder: 0
+  m_Father: {fileID: 1849862933}
+  m_RootOrder: 3
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -11}
+  m_SizeDelta: {x: 0, y: -245}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1590791412
 GameObject:
@@ -796,6 +795,7 @@ RectTransform:
   - {fileID: 311215513}
   - {fileID: 417167128}
   - {fileID: 969539927}
+  - {fileID: 1461018624}
   - {fileID: 1098288232}
   - {fileID: 1392848419}
   m_Father: {fileID: 0}
@@ -826,6 +826,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fd8c39d24aa0f5345a28fb7420e4a30d, type: 2}
   ballsHolder: {fileID: 969539927}
   gameOverObject: {fileID: 1461018621}
+  moveTime: 0.05
   startBallsCount: 15
   ballsPerTurn: 5
 --- !u!1 &1858159857

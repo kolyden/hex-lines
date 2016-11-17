@@ -16,6 +16,7 @@ namespace Game.HexLines
         public BallData[] balls;
         public Transform ballsHolder;
         public GameObject gameOverObject;
+        public float moveTime = 0.5f;
 
         [Header("Game Rules")]
         public int startBallsCount = 10;
@@ -34,7 +35,8 @@ namespace Game.HexLines
         private readonly List<IntVector2> _freeCells = new List<IntVector2>();
         private GridBall[,] _ballsGrid;
         private GridBall _currentBall;
-        private List<IntVector2> _movePath;
+
+        private readonly List<IntVector2> _movePath = new List<IntVector2>();
 
         void Start()
         {
@@ -137,6 +139,7 @@ namespace Game.HexLines
                 var cell = grid.GetCell(pos.x, pos.y);
                 var go = Instantiate(ballPrefab, cell.transform.position, Quaternion.identity, ballsHolder.transform) as GameObject;
                 var ball = go.GetComponent<GridBall>();
+                ball.position = pos;
                 ball.data = balls[Random.Range(0, balls.Length)];
                 ball.onClick += () => BallClick(ball);
                 _ballsGrid[pos.x, pos.y] = ball;
@@ -160,20 +163,128 @@ namespace Game.HexLines
             if (_state != State.Normal || _ballsGrid[x, y] || !_currentBall)
                 return;
 
-            _movePath.Clear();
-            if (!MakePath(_currentBall.position, new IntVector2(x, y), _movePath))
+            var target = new IntVector2(x, y);
+            if (!MakePath(_currentBall.position, target, _movePath))
                 return;
 
-            _state = State.AnimatePath;
+            var pos = _currentBall.position;
+            _ballsGrid[pos.x, pos.y] = null;
+            _freeCells.Add(pos);
+            _freeCells.Remove(target);
+            StartCoroutine(MovePathAnimation());
         }
 
-        bool MakePath(IntVector2 from, IntVector2 to, List<IntVector2> path)
+        // Breadth First Search Algorithm
+       bool MakePath(IntVector2 start, IntVector2 target, List<IntVector2> path)
         {
+            if (start == target)
+                return false;
+
+            var frontier = new List<IntVector2>() { start };
+            var came_from = new Dictionary<IntVector2, IntVector2>();
+            came_from[start] = start;
+
+            while (frontier.Count > 0)
+            {
+                var current = frontier[0];
+                frontier.RemoveAt(0);
+
+                if (current == target)
+                {
+                    path.Add(current);
+                    while (current != start)
+                    {
+                        current = came_from[current];
+                        path.Add(current);
+                    }
+                    path.Reverse();
+                    return true;
+                }
+
+                foreach (var next in GetCellNeighbors(current.x, current.y))
+                {
+                    if (!came_from.ContainsKey(next))
+                    {
+                        frontier.Add(next);
+                        came_from[next] = current;
+                    }
+                }
+            }
+
             return false;
         }
 
-//         IEnumerator MovePathAnimation()
-//         {
-//         }
+        IntVector2[] GetCellNeighbors(int x, int y)
+        {
+            var list = new List<IntVector2>();
+            if (y % 2 != 0)
+            {
+                GetCell(x, y - 1, list);
+                GetCell(x + 1, y - 1, list);
+
+                GetCell(x - 1, y, list);
+                GetCell(x + 1, y, list);
+
+                GetCell(x, y + 1, list);
+                GetCell(x + 1, y + 1, list);
+            }
+            else
+            {
+                GetCell(x - 1, y - 1, list);
+                GetCell(x, y - 1, list);
+
+                GetCell(x - 1, y, list);
+                GetCell(x + 1, y, list);
+
+                GetCell(x - 1, y + 1, list);
+                GetCell(x, y + 1, list);
+            }
+
+            return list.ToArray();
+        }
+
+        void GetCell(int x, int y, List<IntVector2> list)
+        {
+            if (x < 0 || y < 0 ||
+                x >= grid.colsCount ||
+                y >= grid.rowsCount)
+                return;
+
+            if (_ballsGrid[x, y] == null)
+                list.Add(new IntVector2(x, y));
+        }
+
+        IEnumerator MovePathAnimation()
+        {
+            _state = State.AnimatePath;
+            _currentBall.selected = false;
+
+            while (_movePath.Count > 0)
+            {
+                float time = 0;
+                Vector3 start = _currentBall.transform.position;
+                Vector3 end = grid.GetCell(_movePath[0].x, _movePath[0].y).transform.position;
+
+                while (time < moveTime)
+                {
+                    float t = time / moveTime;
+                    _currentBall.transform.position = Vector3.Lerp(start, end, t);                                        
+                    time += Time.deltaTime;
+                    yield return null;
+                }
+
+                _currentBall.transform.position = end;
+                _currentBall.position = _movePath[0];
+                _movePath.RemoveAt(0);
+            }
+
+            var pos = _currentBall.position;
+            _ballsGrid[pos.x, pos.y] = _currentBall;
+            _currentBall.selected = false;
+            _currentBall = null;
+            _state = State.Normal;
+
+            NextTurn();
+        }
     }
 }
